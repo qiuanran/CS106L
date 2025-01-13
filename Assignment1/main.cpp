@@ -9,7 +9,7 @@
 #include <system_error>
 #include <vector>
 
-std::string COURSES_PATH = "<ENTER PATH HERE>";
+std::string COURSES_PATH = "/home/lx/Downloads/CS106L/Assignment1/courses.csv";
 
 bool structTest() {
   Course c{"Standard C++ Programming", "1", "2023-2024 Winter"};
@@ -31,7 +31,7 @@ int main() {
 
   write_courses_not_offered(vector_of_courses);
 
-  FILE *pipe = popen("python3 utils/autograder.py", "r");
+  FILE *pipe = popen( R"(python3 /home/lx/Downloads/CS106L/Assignment1/utils/autograder.py)", "r");
   if (!pipe)
     return -1;
 

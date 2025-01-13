@@ -15,16 +15,17 @@
 #include <sstream>
 #include <tuple>
 #include <vector>
+#include <algorithm>
 
 // STUDENT TODO: add paths
-std::string COURSES_OFFERED_CSV_PATH = "<ENTER PATH HERE>";
+std::string COURSES_OFFERED_CSV_PATH = "/home/lx/Downloads/CS106L/Assignment1/student_output/courses_offered.csv";
 
-std::string COURSES_NOT_OFFERED_CSV_PATH = "<ENTER PATH HERE>";
+std::string COURSES_NOT_OFFERED_CSV_PATH = "/home/lx/Downloads/CS106L/Assignment1/student_output/courses_not_offered.csv";
 
 struct Course {
-  /* STUDENT TODO: ADD TYPE */ title;
-  /* STUDENT TODO: ADD TYPE */ number_of_units;
-  /* STUDENT TODO: ADD TYPE */ quarter;
+  std::string title;
+  std::string number_of_units;
+  std::string quarter;
 
   // ignore this!
   bool operator==(const Course &other) const {
@@ -46,8 +47,26 @@ std::vector<std::string> split(std::string s, char delim);
  * 1) Take a look at the split function we provide
  * 2) Each LINE is a record! *this is important, so we're saying it again :>)*
  */
-void parse_csv(std::string filename, std::vector<Course> vector_of_courses) {
+void parse_csv(std::string filename, std::vector<Course> &vector_of_courses) {
   // STUDENT TODO: Implement this function
+  std::ifstream file(filename);
+  std::string line;
+  if (!file.is_open()) {
+    std::cerr << "File not found" << std::endl;
+    return;
+  }
+  for (int i = 0; std::getline(file, line); ++i) {
+    if (i == 0) {
+      continue;
+    }
+    std::vector<std::string> tokens = split(line, ',');
+    Course course;
+    course.title = tokens[0];
+    course.number_of_units = tokens[1]; 
+    course.quarter = tokens[2];
+    vector_of_courses.push_back(course);
+  }
+  file.close();
 }
 
 /*
@@ -62,8 +81,29 @@ void parse_csv(std::string filename, std::vector<Course> vector_of_courses) {
  * 1) Keep track of the classes that you need to delete!
  * 2) Use the delete_elem_from_vector function we give you!
  */
-void write_courses_offered(std::vector<Course> vector_of_courses) {
+void write_courses_offered(std::vector<Course> &vector_of_courses) {
   // STUDENT TODO: implement this function
+  std::ofstream file(COURSES_OFFERED_CSV_PATH);
+  if (!file.is_open()) {
+    std::cerr << "File not found" << std::endl;
+    return;
+  }
+  for (int i = 0; i < vector_of_courses.size(); ++i) {
+    if (vector_of_courses[i].quarter != "null") {
+      file << vector_of_courses[i].title << ","
+           << vector_of_courses[i].number_of_units << ","
+           << vector_of_courses[i].quarter << std::endl;
+    }
+  }
+  // Delete classes that are offered from vector_of_courses
+  for (int i = 0; i < vector_of_courses.size(); ++i) {
+    if (vector_of_courses[i].quarter != "null") {
+      delete_elem_from_vector(vector_of_courses, vector_of_courses[i]);
+      i--;
+    }
+  }
+ 
+  file.close();
 }
 
 /*
@@ -77,8 +117,23 @@ void write_courses_offered(std::vector<Course> vector_of_courses) {
  *
  * HINT: This should be VERY similar to write_courses_offered
  */
-void write_courses_not_offered(std::vector<Course> vector_of_courses) {
+void write_courses_not_offered(std::vector<Course> &vector_of_courses) {
   // STUDENT TODO: implement this function
+  std::ofstream file(COURSES_NOT_OFFERED_CSV_PATH);
+  if (!file.is_open()) {
+    std::cerr << "File not found" << std::endl;
+    return;
+  }
+
+  for (int i = 0; i < vector_of_courses.size(); ++i) {
+    if (vector_of_courses[i].quarter == "null" && file.is_open()) {
+      file << vector_of_courses[i].title << ","
+           << vector_of_courses[i].number_of_units << ","
+           << vector_of_courses[i].quarter << std::endl;
+    }
+  }
+
+  file.close();
 }
 
 /* ######## HEYA! DON'T MODIFY ANYTHING BEYOND THIS POINT THX ######## */
